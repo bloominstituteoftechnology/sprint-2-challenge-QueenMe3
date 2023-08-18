@@ -73,7 +73,7 @@
     // ❗ Debug properly using the Console
 
     // 👉 CHALLENGE 1
-    function profileActivation() {
+    function profileActivation(profile, reason) {
       // 🧠 profileActivation takes two arguments, profile and reason, which are an object and a string respectively
       //  The reason arg is only used -and therefore required- to deactivate profiles, not to activate them
       //  The profile arg has an `active` property holding a Boolean value
@@ -85,10 +85,32 @@
       //    * If the profile is active but it has a `reason` prop, return the string "confirm status manually"
       //    * If the profile is **missing** an `active` prop, return the string "impossible to ascertain status"
       // 🌟 HINT: to confirm the existence of a prop, check that its value is not undefined
+    
+    if (!profile || typeof profile.active !== 'boolean') {
+        return "impossible to ascertain status";
     }
 
+    if (profile.active) {
+        if ('reason' in profile) {
+            return "confirm status manually";
+        } else {
+            profile.active = false;
+            profile.reason = reason;
+            return profile;
+        }
+    } else {
+        if ('reason' in profile) {
+            profile.active = true;
+            delete profile.reason;
+            return profile;
+        } else {
+            return "confirm status manually";
+        }
+    }
+}
+    
     // 👉 CHALLENGE 2
-    function mineSweeper() {
+    function mineSweeper(grid, x, y) {
       // 🧠 mineSweeper takes a grid as its first argument, and coordinates x and y as the second and third args
       //  The grid is an array of arrays in the following format: [["🟥","🟦","🟥"],["🟦","🟥","🟥"],["🟥","🟦","🟦"]]
       //  Each subarray is a row of the grid, the first subarray being the top row:
@@ -105,11 +127,25 @@
       //    * If mineSweeper is called with such coordinates that the player lands on red, return the string "🟥 💀"
       //    * If the player lands on blue, return the string "🟦 🥳"
       // 🧠 Edge cases:
-      //    * If the x or y coordinates are under 1 or over 3, return the string "invalid coordinates"
+      //    * If the x or y coordinates are under 1 or over 3, return the string "invalid coordinates"  
+
+    if (x < 1 || x > 3 || y < 1 || y > 3) {
+        return "invalid coordinates";
     }
 
+    const targetSquare = grid[y - 1][x - 1];
+
+    if (targetSquare === "🟥") {
+        return "🟥 💀";
+    } else if (targetSquare === "🟦") {
+        return "🟦 🥳";
+    } else {
+        return "invalid square";
+    }
+  }
+
     // 👉 CHALLENGE 3
-    function booleanize() {
+    function booleanize(obj) {
       // 🧠 booleanize takes an object as its single argument, which can have any number of properties
       // Loop over the properties and then return the object, after applying the following transformations:
       //    * If a value is the number zero, it must be transformed into the Boolean false
@@ -118,10 +154,40 @@
       // 🧠 Edge cases:
       //    * If a property name exceeds 9 characters, return the string "shorten all prop names to 9 chars or less"
       // 🌟 HINT: careful not to perform any unintended changes on the object
+    
+    for (const key in obj) {
+    if (obj.hasOwnProperty(key)) {
+    const value = obj[key];
+    const valueType = typeof value;
+
+    if (valueType === 'number') {
+    if (value === 0) {
+    obj[key] = false;
+    } else if (value === 1) {
+    obj[key] = true;
     }
+    } else if (valueType === 'object' && value === null) {
+    delete obj[key];
+    }
+  }
+    if (key.length > 9) {
+    return "shorten all prop names to 9 chars or less";
+    }
+    }
+    return obj;
+    }
+    const inputObject = {
+    zeroValue: 0,
+    oneValue: 1,
+    nullValue: null,
+    someValue: "hello"
+    };
+    const transformedObject = booleanize(inputObject);
+    console.log(transformedObject);
+    
 
     // 👉 CHALLENGE 4
-    function scrub() {
+    function scrub(text, forbidden) {
       // 🧠 scrub takes a string "text" as its first argument, and an array of forbidden words "forbidden" as its second
       // Any word in the text included in the array of forbidden words is replaced with a word of equal length but made of lowcase "x"
       // The scrubbed text is then returned from the function, as seen in the examples below
@@ -133,10 +199,26 @@
       //    scrub("aces high", ["high", "aces", "hearts"]) // returns "xxxx xxxx"
       //    scrub("", ["high", "aces""]) // returns ""
       // 🌟 HINT: useful array methods to use are `push`, `indexOf`, `split`, `join`
+      
+    if (text === "") {
+    return "";
+    }
+
+    const words = text.split(" ");
+    const scrubbedWords = [];
+
+    for (const word of words) {
+    if (forbidden.includes(word)) {
+            scrubbedWords.push("x".repeat(word.length));
+    } else {
+            scrubbedWords.push(word);
+    }
+    }
+    return scrubbedWords.join(" ");
     }
 
     // 👉 CHALLENGE 5
-    function normalizePhoneNumber() {
+    function normalizePhoneNumber(str) {
       // 🧠 normalizePhoneNumber takes a string as its only argument, representing a ten-digit number
       // The function returns a string formatted as seen below
       // 🧠 Examples of usage:
@@ -148,6 +230,23 @@
       // 🌟 HINT: instead of looping over the number's digits, loop backwards over a template "(XXX) XXX-XXXX"
       // 🌟 HINT: at each iteration, if the current character is an "X", replace it with the result of popping a digit from the number
       // 🌟 HINT: if you'd rather loop forwards, use `shift` instead of `pop`
+    
+
+    const template = "(XXX) XXX-XXXX";
+    let formattedNumber = template;
+
+    if (str.length !== 10) {
+    return "type a 10-digit number";
+    }
+
+    for (let i = 0; i < str.length; i++) {
+    if (!/^\d$/.test(str[i])) {
+    return "invalid phone number";
+    }
+    formattedNumber = formattedNumber.replace("X", str[i]);
+    }
+
+    return formattedNumber;
     }
 
     // 👉 CHALLENGE 6 (bonus, NOT graded)
